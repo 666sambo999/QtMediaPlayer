@@ -28,7 +28,26 @@ Widget::Widget(QWidget *parent)
 
     connect(m_player, &QMediaPlayer::durationChanged, this, &Widget::on_duration_changed);
     connect(m_player, &QMediaPlayer::positionChanged, this, &Widget::on_position_changed);
+
+    ///////////////////////play list///////////////////
+    m_playlist_model = new QStandardItemModel(this);
+    ui->tablePlayList -> setModel(m_playlist_model);
+    m_playlist_model -> setHorizontalHeaderLabels(QStringList() <<tr("Audio track") << tr("File paht"));
+    m_playlist = new QMediaPlaylist(m_player);
+    m_player-> setPlaylist(m_playlist);
+    ui-> tablePlayList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    connect(ui->tablePlayList, &QTableView::doubleClicked,
+            [this](const QModelIndex& index) {m_playlist-> setCurrentIndex(index.row());});
+    connect(m_playlist, &QMediaPlaylist::currentIndexChanged,
+            [this](int index)
+        {
+            ui-> labelComposition->setText(m_playlist_model->data(m_playlist_model->index(index, 0)).toString());
+
+        }
+    );
 }
+
 
 Widget::~Widget()
 {
@@ -37,17 +56,33 @@ Widget::~Widget()
 
 void Widget::on_pushButtonAdd_clicked()
 {
-    QString file = QFileDialog::getOpenFileName
-            (this, tr("Open file"),
-             QString("D:\\музыка"),
-             tr("Audio files (*.mp3 *.flac);; mp-3 (*.mp3);; flac(*.flac)"));
-    ui->labelComposition->setText(file);
-    m_player->setMedia(QUrl::fromLocalFile(file));
-    m_player->play();
+//    QString file = QFileDialog::getOpenFileName
+//            (this, tr("Open file"),
+//            QString("D:\\музыка"),
+//             tr("Audio files (*.mp3 *.flac);; mp-3 (*.mp3);; flac(*.flac)"));
+//    ui->labelComposition->setText(file);
+//    m_player->setMedia(QUrl::fromLocalFile(file));
+//    m_player->play();
 
-    //QString composition = *file.split('/').rbegin();
-    //this->setWindowTitle("Media player - " + composition);
-    this->setWindowTitle("Media player - " + file.split('/').back());
+//    //QString composition = *file.split('/').rbegin();
+//    //this->setWindowTitle("Media player - " + composition);
+//    this->setWindowTitle("Media player - " + file.split('/').back());
+    QStringList files = QFileDialog::getOpenFileNames(
+                this,
+                tr("Open files"),
+                QString ("D:\\музыка"),
+                tr("Audio files (*.mp3 *.flac);; mp-3(*.mp3);; Flac(*.flac)")
+            );
+    for (QString filesPaht: files)
+    {
+        //1) создаем строку: каждая строка таблицы labelPlayList
+        //  - это список страндарных вхождений
+        QList<QStandardItem*>items;
+        items.append(new QStandardItem(QDir(filesPaht).dirName()));
+        items.append(new QStandardItem(filesPaht));
+        m_playlist_model->appendRow(items);
+        m_playlist->addMedia(QUrl(filesPaht));
+    }
 }
 
 void Widget::on_HorSliderVolume_valueChanged(int value)
