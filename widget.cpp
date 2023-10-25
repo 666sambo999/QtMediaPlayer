@@ -4,12 +4,14 @@
 #include "QFileDialog"
 #include "QDir"
 #include "QTime"
+#include "QMediaContent"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
     ui->pushButtonPrev ->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->pushButtonPlay -> setIcon(style()-> standardIcon(QStyle::SP_MediaPlay));
     ui->pushButtonPause -> setIcon(style()-> standardIcon(QStyle::SP_MediaPause));
@@ -31,27 +33,48 @@ Widget::Widget(QWidget *parent)
 
     ///////////////////////play list///////////////////
     m_playlist_model = new QStandardItemModel(this);
-    ui->tablePlayList -> setModel(m_playlist_model);
-    m_playlist_model -> setHorizontalHeaderLabels(QStringList() <<tr("Audio track") << tr("File paht"));
+    ui->tablePlayList -> setModel(m_playlist_model);    // связываем таблицу с моделью
+    m_playlist_model -> setHorizontalHeaderLabels(QStringList() <<tr("Audio track") << tr("File paht"));//подписываем заголовки таблицы
+
+    ui->tablePlayList->hideColumn(1);   // скрываем  2 столбец с адресом файла(начиниется с 0)
+    ui->tablePlayList->horizontalHeader()->setStretchLastSection(true);//растягиваем отображаемый столбец на всю ширину окна
     m_playlist = new QMediaPlaylist(m_player);
     m_player-> setPlaylist(m_playlist);
-    ui-> tablePlayList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui-> tablePlayList->setEditTriggers(QAbstractItemView::NoEditTriggers); //запрещаем редактирование ячеек таблицы
 
     connect(ui->tablePlayList, &QTableView::doubleClicked,
-            [this](const QModelIndex& index) {m_playlist-> setCurrentIndex(index.row());});
+            [this](const QModelIndex& index) {m_playlist-> setCurrentIndex(index.row());m_player->play();});
     connect(m_playlist, &QMediaPlaylist::currentIndexChanged,
             [this](int index)
         {
             ui-> labelComposition->setText(m_playlist_model->data(m_playlist_model->index(index, 0)).toString());
-
+            this->setWindowTitle("Media Player - " + ui->labelComposition->text());
+            ui->tablePlayList->selectRow(index);
         }
     );
-}
 
+    ///////////////////////  Load plqylist ////////////////////////
+    m_playlist -> load(QUrl::fromLocalFile("D:\\resors\\Qt\\playlist.m3u"),"m3u");
+    for (int i = 0; i < m_playlist->mediaCount(); i++ )
+    {
+        QMediaContent content = m_playlist->media(i);
+        QString url = content.canonicalUrl().url();
+        QList<QStandardItem*> items;
+        items.append(new QStandardItem(QDir(url).dirName()));
+        items.append(new QStandardItem(url));
+        m_playlist_model->appendRow(items);
+    }
+}
 
 Widget::~Widget()
 {
+    m_playlist->save(QUrl::fromLocalFile("D:\\resors\\Qt\\playlist.m3u"),"m3u");
+
+    delete this -> m_playlist_model;
+    delete this -> m_playlist;
+    delete this -> m_player;
     delete ui;
+
 }
 
 void Widget::on_pushButtonAdd_clicked()
@@ -70,7 +93,7 @@ void Widget::on_pushButtonAdd_clicked()
     QStringList files = QFileDialog::getOpenFileNames(
                 this,
                 tr("Open files"),
-                QString ("D:\\музыка"),
+                QString ("D:\\Musik"),
                 tr("Audio files (*.mp3 *.flac);; mp-3(*.mp3);; Flac(*.flac)")
             );
     for (QString filesPaht: files)
@@ -131,5 +154,16 @@ void Widget::on_pushButtonMute_clicked()
     muted = !muted;
     m_player->setMuted(muted);
     ui->pushButtonMute-> setIcon(style() ->standardIcon(muted ? QStyle::SP_MediaVolumeMuted : QStyle::SP_MediaVolume));
+}
+
+
+void Widget::on_pushButtonPrev_clicked()
+{
+    m_playlist->previous();
+}
+
+void Widget::on_pushButtonNext_clicked()
+{
+    m_playlist->next();
 }
 

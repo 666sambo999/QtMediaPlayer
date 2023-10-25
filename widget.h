@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "QMediaPlayer"
-#include "QMediaPlayList"
+#include "QMediaPlaylist"
 #include "QStandardItemModel"
 
 QT_BEGIN_NAMESPACE
@@ -36,12 +36,17 @@ private slots:
 
     void on_pushButtonMute_clicked();
 
+
+    void on_pushButtonPrev_clicked();
+
+    void on_pushButtonNext_clicked();
+
 private:
     Ui::Widget *ui;
 
     QMediaPlayer* m_player;
     bool muted;
-    QMediaPlaylist* m_playlist;
+    QMediaPlaylist*     m_playlist;
     QStandardItemModel* m_playlist_model;
 
 };
