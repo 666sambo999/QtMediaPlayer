@@ -203,7 +203,6 @@ void Widget::on_pushButtonClear_clicked()
     ui->labelComposition->setText("Erased");
 }
 
-
 void Widget::on_pushButtonRem_clicked()
 {
 //    QModelIndexList list = ui->tablePlayList->;
@@ -218,7 +217,10 @@ void Widget::on_pushButtonRem_clicked()
         if(m_playlist -> removeMedia(it->row()))
         m_playlist_model ->removeRows(it -> row(),1);
     }
-
 }
 
+void Widget::on_horizontalSliderProgress_sliderMoved(int position)
+{
+    m_player->setPosition(position);
+}
 

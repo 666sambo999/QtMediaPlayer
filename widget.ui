@@ -64,6 +64,15 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -76,6 +85,15 @@
      <width>51</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}</string>
    </property>
    <property name="text">
     <string/>
@@ -90,6 +108,15 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -102,6 +129,15 @@
      <width>51</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 6px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}</string>
    </property>
    <property name="text">
     <string/>
@@ -116,6 +152,25 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QSlider::groove:horizontal
+{
+	height: 			8;
+	width: 				120;
+	background:	 red;
+	border-radius:  8px;
+}
+
+QSlider::handle:horizontal
+{
+	visible: true;
+	background: rgb(122,122,122);
+	width: 					10px;
+	height: 				10px;
+	margin:		-7px -7px;
+	border-radius:		10px;
+}</string>
+   </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
@@ -124,10 +179,29 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>160</y>
+     <y>150</y>
      <width>501</width>
-     <height>16</height>
+     <height>20</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QSlider::groove:horizontal
+{
+	height: 			10;
+	width: 				500;
+	background:	 green;
+	border-radius:  5px;
+}
+
+QSlider::handle:horizontal
+{
+	visible: true;
+	background:rgb(111,100,111);
+	width: 					10px;
+	height: 				10px;
+	margin:-7px -7px;
+	border-radius:		6px;
+}</string>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -181,6 +255,15 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -193,6 +276,15 @@
      <width>51</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}</string>
    </property>
    <property name="text">
     <string/>
