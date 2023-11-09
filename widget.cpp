@@ -176,7 +176,7 @@ void Widget::on_duration_changed(qint64 duration)
 
 void Widget::on_horizontalSliderProgress_valueChanged(qint64 position)
 {
-    m_player->setPosition(position);
+    m_player->setPosition( position);
 }
 
 void Widget::on_pushButtonMute_clicked()
@@ -221,4 +221,8 @@ void Widget::on_pushButtonRem_clicked()
 
 }
 
+void Widget::on_horizontalSliderProgress_sliderMoved(int position)
+{
+    m_player->setPosition(position);
+}
 
