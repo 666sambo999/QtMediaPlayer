@@ -6,6 +6,7 @@
 #include "QTime"
 #include "QMediaContent"
 
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
@@ -41,20 +42,23 @@ Widget::Widget(QWidget *parent)
     m_playlist = new QMediaPlaylist(m_player);
     m_player-> setPlaylist(m_playlist);
     ui-> tablePlayList->setEditTriggers(QAbstractItemView::NoEditTriggers); //запрещаем редактирование ячеек таблицы
+    ui-> tablePlayList -> setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tablePlayList->setSelectionMode(QAbstractItemView::SelectionMode::ExtendedSelection);
+
 
     connect(ui->tablePlayList, &QTableView::doubleClicked,
             [this](const QModelIndex& index) {m_playlist-> setCurrentIndex(index.row());m_player->play();});
     connect(m_playlist, &QMediaPlaylist::currentIndexChanged,
             [this](int index)
         {
-            ui-> labelComposition->setText(m_playlist_model->data(m_playlist_model->index(index, 0)).toString());
-            this->setWindowTitle("Media Player - " + ui->labelComposition->text());
-            ui->tablePlayList->selectRow(index);
+           ui-> labelComposition->setText(m_playlist_model->data(m_playlist_model->index(index, 0)).toString());
+           this->setWindowTitle("Media Player - " + ui->labelComposition->text());
+           ui->tablePlayList->selectRow(index);
         }
     );
 
     ///////////////////////  Load plqylist ////////////////////////
-    m_playlist -> load(QUrl::fromLocalFile("D:\\resors\\Qt\\playlist.m3u"),"m3u");
+    /*m_playlist -> load(QUrl::fromLocalFile("D:\\resors\\Qt\\playlist.m3u"),"m3u");
     for (int i = 0; i < m_playlist->mediaCount(); i++ )
     {
         QMediaContent content = m_playlist->media(i);
@@ -63,19 +67,40 @@ Widget::Widget(QWidget *parent)
         items.append(new QStandardItem(QDir(url).dirName()));
         items.append(new QStandardItem(url));
         m_playlist_model->appendRow(items);
-    }
+    }*/
+    load_playlist(DEFAULT_PLAYLIST);
 }
 
 Widget::~Widget()
 {
-    m_playlist->save(QUrl::fromLocalFile("D:\\resors\\Qt\\playlist.m3u"),"m3u");
-
+    //m_playlist->save(QUrl::fromLocalFile(DEFAULT_PLAYLIST), QString(DEFAULT_PLAYLIST).split('.').back().toStdString().c_str());
     delete this -> m_playlist_model;
     delete this -> m_playlist;
     delete this -> m_player;
     delete ui;
 
 }
+
+ void Widget::load_playlist (QString filename)
+ {
+     QString format = filename.split('.').back();
+     m_playlist -> load(QUrl::fromLocalFile(filename),format.toStdString().c_str());
+     for (int i = 0; i < m_playlist->mediaCount(); i++ )
+     {
+         QMediaContent content = m_playlist->media(i);
+         QString url = content.canonicalUrl().url();
+         QList<QStandardItem*> items;
+         items.append(new QStandardItem(QDir(url).dirName()));
+         items.append(new QStandardItem(url));
+         m_playlist_model->appendRow(items);
+     }
+ }
+
+ void Widget::save_playlist(QString filename)
+ {
+     QString format = filename.split('.').back();
+     m_playlist->save(QUrl::fromLocalFile(filename),format.toStdString().c_str());
+ }
 
 void Widget::on_pushButtonAdd_clicked()
 {
@@ -94,8 +119,14 @@ void Widget::on_pushButtonAdd_clicked()
                 this,
                 tr("Open files"),
                 QString ("D:\\Musik"),
-                tr("Audio files (*.mp3 *.flac);; mp-3(*.mp3);; Flac(*.flac)")
+                tr("Audio files (*.mp3 *.flac);; mp-3(*.mp3);; Flac(*.flac);;Playlist(*.m3u)")
             );
+    QString format = files.back().split('.').back();
+    if (format == "m3u")
+    {
+        load_playlist(files.back());
+        return;
+    }
     for (QString filesPaht: files)
     {
         //1) создаем строку: каждая строка таблицы labelPlayList
@@ -148,14 +179,12 @@ void Widget::on_horizontalSliderProgress_valueChanged(qint64 position)
     m_player->setPosition(position);
 }
 
-
 void Widget::on_pushButtonMute_clicked()
 {
     muted = !muted;
     m_player->setMuted(muted);
     ui->pushButtonMute-> setIcon(style() ->standardIcon(muted ? QStyle::SP_MediaVolumeMuted : QStyle::SP_MediaVolume));
 }
-
 
 void Widget::on_pushButtonPrev_clicked()
 {
@@ -166,4 +195,30 @@ void Widget::on_pushButtonNext_clicked()
 {
     m_playlist->next();
 }
+
+void Widget::on_pushButtonClear_clicked()
+{
+    m_playlist->clear();
+    m_playlist_model->clear();
+    ui->labelComposition->setText("Erased");
+}
+
+
+void Widget::on_pushButtonRem_clicked()
+{
+//    QModelIndexList list = ui->tablePlayList->;
+//    for (QModelIndex i: list)
+//    {
+//        m_playlist -> removeMedia(i.row());
+//    }
+    QItemSelectionModel* selection = ui->tablePlayList->selectionModel();
+    QModelIndexList rows = selection->selectedRows();
+    for (QModelIndexList::iterator it = rows.begin(); it!= rows.end(); ++it)
+    {
+        if(m_playlist -> removeMedia(it->row()))
+        m_playlist_model ->removeRows(it -> row(),1);
+    }
+
+}
+
 
