@@ -392,7 +392,20 @@ QPushButton:checked
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">QPushButton
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(211,211,211);
+	color: rgb(11,11,11);
+}
+QPushButton:checked
+{
+	border: none;
+	border-radius: 5px;
+	background-color: rgb(11,11,11);
+	color: rgb(211,211,211);
+}</string>
    </property>
    <property name="text">
     <string>Shuffle</string>

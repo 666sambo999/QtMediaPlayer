@@ -50,6 +50,10 @@ private slots:
 
     void on_horizontalSliderProgress_sliderMoved(int position);
 
+    void on_pushButtonLoop_clicked();
+
+    void on_pushButtonShuffle_clicked();
+
 private:
     Ui::Widget *ui;
 
@@ -58,6 +62,7 @@ private:
     const char* DEFAULT_PLAYLIST = "D:\\resors\\Qt\\playlist.m3u";
     QMediaPlaylist*     m_playlist;
     QStandardItemModel* m_playlist_model;
-
+    bool shuffle;
+    bool loop;
 };
 #endif // WIDGET_H

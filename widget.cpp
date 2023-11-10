@@ -68,7 +68,13 @@ Widget::Widget(QWidget *parent)
         items.append(new QStandardItem(url));
         m_playlist_model->appendRow(items);
     }*/
+
+
     load_playlist(DEFAULT_PLAYLIST);
+     ui->pushButtonShuffle->setCheckable(true);
+     ui->pushButtonLoop->setCheckable(true);
+    shuffle = false;
+    loop = false;
 }
 
 Widget::~Widget()
@@ -222,5 +228,32 @@ void Widget::on_pushButtonRem_clicked()
 void Widget::on_horizontalSliderProgress_sliderMoved(int position)
 {
     m_player->setPosition(position);
+}
+
+void Widget::on_pushButtonLoop_clicked()
+{
+    loop = !loop;
+    m_playlist->setPlaybackMode(QMediaPlaylist::PlaybackMode::Sequential);
+    if(loop)m_playlist->setPlaybackMode(QMediaPlaylist::PlaybackMode::Loop);
+    if(shuffle)m_playlist->setPlaybackMode(QMediaPlaylist::PlaybackMode::Random);
+    ui->pushButtonLoop->setBackgroundRole(QPalette::Dark);
+}
+
+void Widget::on_pushButtonShuffle_clicked()
+{
+    //m_playlist->shuffle();
+    if(!shuffle)
+    {
+        shuffle = true;
+        m_playlist->setPlaybackMode(QMediaPlaylist::PlaybackMode::Random);
+        ui->pushButtonShuffle->setCheckable(shuffle);
+    }
+    else
+    {
+        shuffle = false;
+        m_playlist->setPlaybackMode(QMediaPlaylist::PlaybackMode::Sequential);
+        ui->pushButtonShuffle->setCheckable(shuffle);
+    }
+   // ui->pushButtonShuffle
 }
 
